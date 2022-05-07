@@ -2,6 +2,7 @@ from itertools import permutations
 import pandas as pd
 import streamlit as st
 import os
+import random
 
 st.title("Permutation")
 temp = '/temp.csv'
@@ -12,10 +13,13 @@ path = path + temp
 
 
 def main():
+    # take input from user as integer
+    output_member_len = st.slider("Enter the number of output members", 1, 20, 1)
     if st.button('process'):
         df1 = pd.read_csv(path)
 
         l = df1['Names'].tolist()
+        delete_elem_number = (len(l) - 2) - output_member_len
 
         comb = permutations(l, 2)
         comb2 = permutations(l, 2)
@@ -25,7 +29,8 @@ def main():
             l1 = list(l)
             l1.remove(i[0])
             l1.remove(i[1])
-            df = df.append({"President": i[0], "Secretary": i[1], "Members": l1}, ignore_index=True)
+            l2 = delete_random_elems(l1, delete_elem_number)
+            df = df.append({"President": i[0], "Secretary": i[1], "Members": l2}, ignore_index=True)
         print(df)
         df.to_csv(path, index=False)
         st.download_button(
@@ -45,6 +50,9 @@ def upload_file():
         st.write(df1)
         return True
 
+def delete_random_elems(input_list, n):
+    to_delete = set(random.sample(range(len(input_list)), n))
+    return [x for i,x in enumerate(input_list) if not i in to_delete]
 
 
 
